@@ -46,11 +46,12 @@ def update(frame):
             value = int(raw)
             data.append(value)
             line.set_ydata(list(data))
+            ax.set_ylim(min(data)-10,max(data)+10)
     except:
         pass
 
     return line,
 
-ani = animation.FuncAnimation(fig, update, interval=20, blit=True)
+ani = animation.FuncAnimation(fig, update, interval=20, blit=False)
 plt.show()
 ser.close()
