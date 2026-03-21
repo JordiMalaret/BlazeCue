@@ -78,7 +78,7 @@ static const uint16_t FIRCoeffs[12] = {172, 321, 579, 927, 1360, 1858, 2390, 291
 //  Heart Rate Monitor functions takes a sample value and the sample number
 //  Returns true if a beat is detected
 //  A running average of four samples is recommended for display on the screen.
-int16_t checkForBeat(int32_t sample)
+bool checkForBeat(int32_t sample)
 {
   bool beatDetected = false;
 
@@ -133,8 +133,13 @@ int16_t checkForBeat(int32_t sample)
     IR_AC_Signal_min = IR_AC_Signal_Current;
   }
   // Serial.println(IR_AC_Signal_Current);
+  return(beatDetected);
+}
+
+int16_t getCurrentACVal(){
   return(IR_AC_Signal_Current);
 }
+
 
 //  Average DC Estimator
 int16_t averageDCEstimator(int32_t *p, uint16_t x)
