@@ -44,6 +44,7 @@ def update(frame):
         raw = ser.readline().decode("utf-8", errors="ignore").strip()
         if raw:
             value = int(raw)
+            print(value)
             data.append(value)
             line.set_ydata(list(data))
             ax.set_ylim(min(data)-10,max(data)+10)

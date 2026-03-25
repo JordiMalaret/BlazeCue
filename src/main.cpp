@@ -35,5 +35,8 @@ void loop() {
   int32_t data = particleSensor.getIR();
   bool beat = checkForBeat(data);
   int16_t value = getCurrentACVal();
-  Serial.println(value);
+  double filteredValue = filter(value);
+  
+
+  Serial.println(filteredValue);
 }
