@@ -5,7 +5,6 @@
 #include <cstdint>
 
 constexpr std::size_t ARRAY_SIZE = 1024;
-const int chunkSize = 500;
 const int hopSize = 100;
 const int chunkSize = 500;   // example: 10 sec at 50 Hz
 
