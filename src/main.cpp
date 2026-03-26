@@ -38,5 +38,5 @@ void loop() {
   double filteredValue = filter(value);
   
 
-  Serial.println(filteredValue);
+  Serial.printf("%d,%d\n", filteredValue, value);
 }

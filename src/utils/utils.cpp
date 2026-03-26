@@ -5,7 +5,27 @@
 #include <vector>
 #include <deque>
 
+std::deque<double> filteredBuffer;
 
+std::array<double,chunkSize> chunk(){
+    if(filteredBuffer.size()>=hopSize){
+        filteredBuffer.erase(filteredBuffer.begin(),
+                                 filteredBuffer.begin() + hopSize);
+    }
+    while(filteredBuffer.size() < chunkSize){
+        int16_t value = getCurrentACVal();
+        double filteredSample = filter(value);
+        filteredBuffer.push_back(filteredSample);
+    }
+    // When enough samples collected, process chunk
+    if (filteredBuffer.size() >= chunkSize) {
+        std::array<double, chunkSize> chunk{};
+        std::copy(filteredBuffer.begin(),
+              filteredBuffer.begin() + chunkSize,
+              chunk.begin());
+        return(chunk);
+    }
+}
 double process_biquad(double x, const BiquadCoeffs& c, BiquadState& s) {
     double y = c.b0 * x + s.z1;
     s.z1 = c.b1 * x - c.a1 * y + s.z2;
