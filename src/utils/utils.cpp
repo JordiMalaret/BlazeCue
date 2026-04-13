@@ -50,8 +50,8 @@ double filter(int16_t x) {
         0.920864358847
     };
 
-    BiquadState s1 = {0.0, 0.0};
-    BiquadState s2 = {0.0, 0.0};
+    static BiquadState s1 = {0.0, 0.0};
+    static BiquadState s2 = {0.0, 0.0};
     
     double y = process_biquad(x, sec1, s1);
     y = process_biquad(y, sec2, s2);

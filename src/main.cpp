@@ -1,17 +1,17 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <array>
-
 #include "MAX30105.h"
 #include "heartRate.h"
 #include "utils/utils.h"
-#include <DFRobot_MLX90614.h>
+#include <Adafruit_MLX90614.h>
 
 MAX30105 particleSensor;
-DFRobot_MLX90614_I2C sensor;
+Adafruit_MLX90614 sensor = Adafruit_MLX90614();
 
 void setup() {
  
+  pinMode(0, OUTPUT);
   
   Serial.begin(9600);
   
@@ -31,10 +31,10 @@ void setup() {
   particleSensor.setSampleRate(50);
 
   // initialize the sensor
-  while( NO_ERR != sensor.begin() ){
-    Serial.println("Communication with device failed, please check connection");
-    delay(3000);
-  }
+  if (!sensor.begin()) {
+    Serial.println("Error connecting to MLX sensor. Check wiring.");
+    while (1);
+  };
   Serial.println("Begin ok!");
 
   /**
@@ -43,20 +43,26 @@ void setup() {
    *      true is to enter sleep mode
    *      false is to exit sleep mode (automatically exit sleep mode after power down and restart)
    */
-  sensor.enterSleepMode();
-  delay(50);
-  sensor.enterSleepMode(false);
-  delay(200);
+
 }
 
 void loop() {
   int32_t data = particleSensor.getIR();
   bool beat = checkForBeat(data);
+  if(beat){
+    digitalWrite(0,1);
+    Serial.println(1);
+  }
+  else{
+    digitalWrite(0,0);
+  }
   int16_t value = getCurrentACVal();
   double filteredValue = filter(value);
   
 
-  Serial.printf("%d,%d\n", filteredValue, value);
+  // Serial.printf("%f,%d\n", filteredValue, value);
+  Serial.printf("%d,%d\n", data, value);
+  Serial.println(value);
 
 
   
@@ -64,7 +70,7 @@ void loop() {
    * get ambient temperature, unit is Celsius
    * return value range： -40.01 °C ~ 85 °C
    */
-  float ambientTemp = sensor.getAmbientTempCelsius();
+  float ambientTemp = sensor.readAmbientTempC();
 
   /**
    * get temperature of object 1, unit is Celsius
@@ -72,16 +78,16 @@ void loop() {
    * @n  -70.01 °C ~ 270 °C(MLX90614ESF-DCI)
    * @n  -70.01 °C ~ 380 °C(MLX90614ESF-DCC)
    */
-  float objectTemp = sensor.getObjectTempCelsius();
+  float objectTemp = sensor.readObjectTempC();
 
+  // Serial.printf("%f,%f\n", ambientTemp*9/5 + 32, objectTemp*9/5 + 32);
   // print measured data in Celsius
-  Serial.print("Ambient celsius : "); Serial.print(ambientTemp); Serial.println(" °C");
-  Serial.print("Object celsius : ");  Serial.print(objectTemp);  Serial.println(" °C");
+  // Serial.print("Ambient celsius : "); Serial.print(ambientTemp); Serial.println(" °C");
+  // Serial.print("Object celsius : ");  Serial.print(objectTemp);  Serial.println(" °C");
 
-  // print measured data in Fahrenheit
-  Serial.print("Ambient fahrenheit : "); Serial.print(ambientTemp*9/5 + 32); Serial.println(" F");
-  Serial.print("Object fahrenheit : ");  Serial.print(objectTemp*9/5 + 32);  Serial.println(" F");
+  // // print measured data in Fahrenheit
+  // Serial.print("Ambient fahrenheit : "); Serial.print(ambientTemp*9/5 + 32); Serial.println(" F");
+  // Serial.print("Object fahrenheit : ");  Serial.print(objectTemp*9/5 + 32);  Serial.println(" F");
 
-  Serial.println();
-  delay(500);
+  
 }
